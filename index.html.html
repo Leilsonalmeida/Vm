@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VM Consultoria Ambiental</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --verde-escuro: #1a3a2a;
+    --verde-medio: #2d6a4f;
+    --verde-claro: #52b788;
+    --verde-suave: #b7e4c7;
+    --verde-palido: #f0faf4;
+    --areia: #f5f0e8;
+    --areia-escuro: #e8dfc8;
+    --texto: #1a2e1f;
+    --texto-suave: #4a6357;
+    --branco: #ffffff;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--texto);
+    background: var(--branco);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--areia-escuro);
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    color: var(--verde-escuro);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .nav-logo-leaf {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    text-decoration: none;
+    color: var(--texto-suave);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--verde-medio); }
+
+  .nav-cta {
+    background: var(--verde-medio);
+    color: var(--branco) !important;
+    padding: 0.55rem 1.2rem;
+    border-radius: 100px;
+    font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+
+  .nav-cta:hover { background: var(--verde-escuro) !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    background: var(--verde-escuro);
+    display: flex;
+    align-items: center;
+    padding: 7rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 70% 50%, rgba(82,183,136,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(45,106,79,0.3) 0%, transparent 50%);
+  }
+
+  .hero-pattern {
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 500px;
+    height: 500px;
+    opacity: 0.06;
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(82,183,136,0.2);
+    border: 1px solid rgba(82,183,136,0.3);
+    color: var(--verde-suave);
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.35rem 0.85rem;
+    border-radius: 100px;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 4vw, 3.4rem);
+    color: var(--branco);
+    line-height: 1.2;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 em {
+    font-style: normal;
+    color: var(--verde-claro);
+  }
+
+  .hero-desc {
+    color: rgba(255,255,255,0.65);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--verde-claro);
+    color: var(--verde-escuro);
+    padding: 0.9rem 1.8rem;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: transform 0.2s, background 0.2s;
+  }
+
+  .btn-primary:hover { transform: translateY(-2px); background: #6ecb9c; }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1.5px solid rgba(255,255,255,0.3);
+    color: rgba(255,255,255,0.85);
+    padding: 0.9rem 1.8rem;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .btn-outline:hover {
+    border-color: rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.07);
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--verde-claro);
+    display: block;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-stat-label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Hero right — card da Vanessa */
+  .hero-card {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 24px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .hero-card-photo {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: var(--verde-medio);
+    border: 3px solid var(--verde-claro);
+    object-fit: cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--branco);
+  }
+
+  .hero-card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--branco);
+    margin-bottom: 0.2rem;
+  }
+
+  .hero-card-title {
+    font-size: 0.85rem;
+    color: var(--verde-suave);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .hero-card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .tag {
+    background: rgba(82,183,136,0.15);
+    color: var(--verde-suave);
+    border: 1px solid rgba(82,183,136,0.25);
+    font-size: 0.78rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+
+  .hero-card-quote {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.7;
+    font-style: italic;
+    border-left: 2px solid var(--verde-claro);
+    padding-left: 1rem;
+  }
+
+  /* SOBRE */
+  .sobre {
+    background: var(--areia);
+    padding: 6rem 2rem;
+  }
+
+  .sobre-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  .section-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--verde-medio);
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 3vw, 2.5rem);
+    color: var(--verde-escuro);
+    line-height: 1.25;
+    margin-bottom: 1.5rem;
+  }
+
+  .sobre-text {
+    color: var(--texto-suave);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+  }
+
+  .sobre-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 2rem;
+  }
+
+  .sobre-items li {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--texto-suave);
+  }
+
+  .sobre-items li::before {
+    content: '';
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    background: var(--verde-claro);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M2.5 6.5l2.5 2.5 4.5-5' stroke='%231a3a2a' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 12px;
+  }
+
+  .sobre-foto-wrap {
+    position: relative;
+  }
+
+  .sobre-foto-box {
+    width: 100%;
+    aspect-ratio: 4/5;
+    background: var(--verde-medio);
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sobre-foto-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .sobre-foto-badge {
+    position: absolute;
+    bottom: -1.5rem;
+    left: -1.5rem;
+    background: var(--verde-escuro);
+    color: var(--branco);
+    padding: 1.25rem 1.75rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  }
+
+  .sobre-foto-badge-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2rem;
+    color: var(--verde-claro);
+    display: block;
+    line-height: 1;
+  }
+
+  .sobre-foto-badge-text {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* SERVIÇOS */
+  .servicos {
+    padding: 6rem 2rem;
+    background: var(--branco);
+  }
+
+  .servicos-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .servicos-header {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    max-width: 580px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .servicos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .servico-card {
+    background: var(--verde-palido);
+    border: 1px solid var(--verde-suave);
+    border-radius: 16px;
+    padding: 1.75rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: default;
+  }
+
+  .servico-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(45,106,79,0.12);
+  }
+
+  .servico-icon {
+    width: 46px;
+    height: 46px;
+    background: var(--verde-medio);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.1rem;
+  }
+
+  .servico-icon svg {
+    width: 22px;
+    height: 22px;
+    stroke: white;
+    fill: none;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .servico-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    color: var(--verde-escuro);
+    margin-bottom: 0.6rem;
+    line-height: 1.3;
+  }
+
+  .servico-card p {
+    font-size: 0.85rem;
+    color: var(--texto-suave);
+    line-height: 1.6;
+  }
+
+  /* COBERTURA */
+  .cobertura {
+    background: var(--verde-escuro);
+    padding: 5rem 2rem;
+    text-align: center;
+  }
+
+  .cobertura-inner {
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .cobertura .section-title {
+    color: var(--branco);
+    margin-bottom: 1rem;
+  }
+
+  .cobertura-desc {
+    color: rgba(255,255,255,0.6);
+    font-size: 1.05rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .cobertura-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(82,183,136,0.15);
+    border: 1px solid rgba(82,183,136,0.3);
+    color: var(--verde-suave);
+    padding: 0.75rem 1.5rem;
+    border-radius: 100px;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+
+  /* CONTATO */
+  .contato {
+    padding: 6rem 2rem;
+    background: var(--areia);
+  }
+
+  .contato-inner {
+    max-width: 700px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .contato-desc {
+    color: var(--texto-suave);
+    font-size: 1.05rem;
+    margin-bottom: 3rem;
+    line-height: 1.7;
+  }
+
+  .contato-card {
+    background: var(--branco);
+    border: 1px solid var(--areia-escuro);
+    border-radius: 20px;
+    padding: 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .contato-email {
+    color: var(--texto-suave);
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .btn-whatsapp {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #25D366;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: transform 0.2s, background 0.2s;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.35);
+  }
+
+  .btn-whatsapp:hover { transform: translateY(-2px); background: #1db954; }
+
+  /* FOOTER */
+  footer {
+    background: var(--verde-escuro);
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.82rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+
+  footer a { color: var(--verde-suave); text-decoration: none; }
+
+  /* WHATSAPP FLOAT */
+  .wpp-float {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 99;
+    background: #25D366;
+    color: white;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+    transition: transform 0.2s;
+  }
+
+  .wpp-float:hover { transform: scale(1.1); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 1rem; }
+    .nav-links { display: none; }
+    .hero-content { grid-template-columns: 1fr; gap: 2.5rem; }
+    .hero-card { display: none; }
+    .sobre-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .sobre-foto-wrap { order: -1; }
+    .sobre-foto-badge { bottom: -1rem; left: -0.5rem; }
+    .hero-stats { gap: 1.5rem; }
+  }
+
+  /* Animações */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero-content > * {
+    animation: fadeUp 0.7s ease backwards;
+  }
+  .hero-content > *:nth-child(2) { animation-delay: 0.2s; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <img src="logo.png" alt="VM Consultoria Ambiental" style="height:36px;width:auto;object-fit:contain;">
+  </a>
+  <ul class="nav-links">
+    <li><a href="#servicos">Serviços</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+    <li><a href="#contato" class="nav-cta">Fale conosco</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <svg class="hero-pattern" viewBox="0 0 400 400" fill="none">
+    <circle cx="200" cy="200" r="180" stroke="white" stroke-width="1"/>
+    <circle cx="200" cy="200" r="140" stroke="white" stroke-width="1"/>
+    <circle cx="200" cy="200" r="100" stroke="white" stroke-width="1"/>
+    <circle cx="200" cy="200" r="60" stroke="white" stroke-width="1"/>
+    <line x1="20" y1="200" x2="380" y2="200" stroke="white" stroke-width="0.5"/>
+    <line x1="200" y1="20" x2="200" y2="380" stroke="white" stroke-width="0.5"/>
+    <line x1="74" y1="74" x2="326" y2="326" stroke="white" stroke-width="0.5"/>
+    <line x1="326" y1="74" x2="74" y2="326" stroke="white" stroke-width="0.5"/>
+  </svg>
+  <div class="hero-content">
+    <div>
+      <div class="hero-badge">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+        Espírito Santo, ES
+      </div>
+      <h1>Conformidade ambiental para o seu <em>negócio crescer</em></h1>
+      <p class="hero-desc">Assessoria ambiental completa para empresas que precisam de licenciamento, laudos e regularização — com atenção personalizada em cada etapa.</p>
+      <div class="hero-actions">
+        <a href="https://wa.me/+5527992221368?text=Olá,%20gostaria%20de%20mais%20informações%20sobre%20os%20serviços%20da%20VM%20Consultoria%20Ambiental!" class="btn-primary" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          Solicitar proposta
+        </a>
+        <a href="#servicos" class="btn-outline">Ver serviços</a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <span class="hero-stat-num">10+</span>
+          <span class="hero-stat-label">Anos de experiência</span>
+        </div>
+        <div>
+          <span class="hero-stat-num">ES</span>
+          <span class="hero-stat-label">Todo o estado</span>
+        </div>
+        <div>
+          <span class="hero-stat-num">11</span>
+          <span class="hero-stat-label">Tipos de serviços</span>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="hero-card">
+        <img src="https://vmconsultoriambiental.com/foto-consultora.png" alt="Vanessa Mantovani"
+          style="width:90px;height:90px;border-radius:50%;object-fit:cover;object-position:top;border:3px solid #52b788;"
+          onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+        <div style="width:90px;height:90px;border-radius:50%;background:#2d6a4f;border:3px solid #52b788;display:none;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:2rem;color:white;">V</div>
+        <div>
+          <p class="hero-card-name">Vanessa Mantovani</p>
+          <p class="hero-card-title">Engenheira Ambiental</p>
+        </div>
+        <div class="hero-card-tags">
+          <span class="tag">Eng. Ambiental</span>
+          <span class="tag">Seg. do Trabalho</span>
+          <span class="tag">10 anos de exp.</span>
+        </div>
+        <p class="hero-card-quote">Acompanho cada etapa do processo para garantir que sua empresa esteja sempre em conformidade.</p>
+        <a href="mailto:vanessa.licambiental@gmail.com" style="color:rgba(183,228,199,0.7);font-size:0.82rem;text-decoration:none;">
+          vanessa.licambiental@gmail.com
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVIÇOS -->
+<section class="servicos" id="servicos">
+  <div class="servicos-inner">
+    <div class="servicos-header">
+      <p class="section-label">O que fazemos</p>
+      <h2 class="section-title">Serviços ambientais para regularizar e proteger seu negócio</h2>
+    </div>
+    <div class="servicos-grid">
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <h3>Licenciamento Ambiental</h3>
+        <p>Obtenção e renovação de licenças junto aos órgãos ambientais competentes, garantindo a legalidade da sua atividade.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <h3>Acompanhamento de Condicionantes</h3>
+        <p>Monitoramento e cumprimento das condicionantes exigidas nas licenças ambientais para manter sua empresa regular.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        </div>
+        <h3>RAPP</h3>
+        <p>Elaboração do Relatório Anual de Atividades Potencialmente Poluidoras, exigido anualmente pelos órgãos ambientais.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <h3>PRAD</h3>
+        <p>Plano de Recuperação de Área Degradada para restauração ambiental de áreas impactadas pela atividade produtiva.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </div>
+        <h3>PGRS</h3>
+        <p>Plano de Gerenciamento de Resíduos Sólidos, com diretrizes para coleta, armazenamento, transporte e destinação.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+        </div>
+        <h3>PCA</h3>
+        <p>Plano de Controle Ambiental com medidas preventivas e mitigadoras para as atividades com potencial poluidor.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+        </div>
+        <h3>Estudos Ambientais</h3>
+        <p>EIA, RIMA e demais estudos técnicos ambientais necessários para viabilizar empreendimentos e projetos.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        </div>
+        <h3>Registro de Atividade Florestal</h3>
+        <p>Cadastramento e regularização de atividades florestais junto aos órgãos competentes do Espírito Santo.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"/></svg>
+        </div>
+        <h3>Informação de Corte & Transporte de Resíduos</h3>
+        <p>Documentação para corte de vegetação e transporte de resíduos classe I e II, com toda a regularidade exigida.</p>
+      </div>
+
+      <div class="servico-card">
+        <div class="servico-icon">
+          <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+        </div>
+        <h3>Dispensa do Licenciamento Ambiental</h3>
+        <p>Análise e obtenção da declaração de dispensa para atividades que não exigem licença ambiental formal.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SOBRE -->
+<section class="sobre" id="sobre">
+  <div class="sobre-inner">
+    <div class="sobre-foto-wrap">
+      <div class="sobre-foto-box">
+        <img src="https://vmconsultoriambiental.com/foto-consultora.png" alt="Vanessa Mantovani"
+          onerror="this.style.display='none';this.parentElement.style.background='var(--verde-medio)'">
+      </div>
+      <div class="sobre-foto-badge">
+        <span class="sobre-foto-badge-num">10+</span>
+        <span class="sobre-foto-badge-text">Anos de atuação</span>
+      </div>
+    </div>
+    <div>
+      <p class="section-label">Sobre a consultora</p>
+      <h2 class="section-title">Vanessa Mantovani</h2>
+      <p class="sobre-text">Engenheira Ambiental com mais de 10 anos de experiência na área, especializada em licenciamento e regularização ambiental para empresas de todos os portes no Espírito Santo.</p>
+      <p class="sobre-text">Pós-graduada em Engenharia de Segurança do Trabalho, oferece uma abordagem integrada que une conformidade ambiental e segurança, proporcionando soluções completas para seus clientes.</p>
+      <ul class="sobre-items">
+        <li>Graduada em Engenharia Ambiental</li>
+        <li>Pós-graduada em Engenharia de Segurança do Trabalho</li>
+        <li>Atendimento em todo o estado do Espírito Santo</li>
+        <li>Acompanhamento dedicado em cada etapa do processo</li>
+        <li>Propostas personalizadas para cada cliente</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- COBERTURA -->
+<section class="cobertura">
+  <div class="cobertura-inner">
+    <p class="section-label" style="color:var(--verde-suave);">Área de atuação</p>
+    <h2 class="section-title">Atendemos todo o Espírito Santo</h2>
+    <p class="cobertura-desc">Independente da localização da sua empresa no estado, oferecemos atendimento presencial e remoto com a mesma qualidade e dedicação.</p>
+    <div class="cobertura-pill">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      Estado do Espírito Santo — ES
+    </div>
+  </div>
+</section>
+
+<!-- CONTATO -->
+<section class="contato" id="contato">
+  <div class="contato-inner">
+    <p class="section-label">Entre em contato</p>
+    <h2 class="section-title">Vamos conversar sobre o seu projeto?</h2>
+    <p class="contato-desc">Entre em contato para que possamos entender as necessidades da sua empresa e elaborar uma proposta personalizada.</p>
+    <div class="contato-card">
+      <a href="https://wa.me/+5527992221368?text=Olá,%20gostaria%20de%20mais%20informações%20sobre%20os%20serviços%20da%20VM%20Consultoria%20Ambiental!" class="btn-whatsapp" target="_blank">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Chamar no WhatsApp
+      </a>
+      <a href="mailto:vanessa.licambiental@gmail.com" class="contato-email">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        vanessa.licambiental@gmail.com
+      </a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 VM Consultoria Ambiental · Todos os direitos reservados · <a href="mailto:vanessa.licambiental@gmail.com">vanessa.licambiental@gmail.com</a></p>
+</footer>
+
+<!-- WhatsApp flutuante -->
+<a href="https://wa.me/+5527992221368?text=Olá,%20gostaria%20de%20mais%20informações%20sobre%20os%20serviços%20da%20VM%20Consultoria%20Ambiental!" class="wpp-float" target="_blank" title="Fale conosco no WhatsApp">
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+</a>
+
+</body>
+</html>
